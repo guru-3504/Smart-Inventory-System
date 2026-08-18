@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Order {{ order.order_number }} - Inventory System{% endblock %}
+{% block content %}
+<h1 class="page-title">Order #{{ order.order_number }}</h1>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Order Information</h5>
+                <dl class="row">
+                    <dt class="col-sm-4">Order #:</dt>
+                    <dd class="col-sm-8"><strong>{{ order.order_number }}</strong></dd>
+
+                    <dt class="col-sm-4">User:</dt>
+                    <dd class="col-sm-8">{{ order.user.get_full_name|default:order.user.username }}</dd>
+
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        {% if order.status == 'completed' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% elif order.status == 'pending' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% else %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-4">Total:</dt>
+                    <dd class="col-sm-8"><strong>₹{{ order.total_amount }}</strong></dd>
+
+                    <dt class="col-sm-4">Created:</dt>
+                    <dd class="col-sm-8">{{ order.created_at|date:"M d, Y H:i" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>Order Items</h3>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><strong>{{ item.product.name }}</strong></td>
+                    <td><code>{{ item.product.sku }}</code></td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.price_at_order }}</td>
+                    <td>₹{{ item.get_subtotal }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No items in this order</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                    <td><strong>₹{{ order.total_amount }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'order_list' %}" class="btn btn-outline-secondary">← Back to Orders</a>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Inventory System{% endblock %}
+{% block content %}
+<h1 class="page-title">📊 Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h3>{{ total_products }}</h3>
+            <p>Total Products</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h3>{{ total_categories }}</h3>
+            <p>Categories</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h3>{{ total_suppliers }}</h3>
+            <p>Suppliers</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h3>{{ total_orders }}</h3>
+            <p>Total Orders</p>
+        </div>
+    </div>
+</div>
+
+{% if low_stock_count > 0 %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>⚠️ Warning!</strong> You have {{ low_stock_count }} product(s) with low stock.
+</div>
+{% endif %}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Orders Trend (Last 12 Months)</h5>
+                <canvas id="ordersChart" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">🔴 Low Stock Products</h5>
+                <table class="table table-sm">
+                    <thead><tr><th>Product</th><th>Stock</th></tr></thead>
+                    <tbody>
+                        {% for product in low_stock_products %}
+                        <tr><td>{{ product.name }}</td><td>{{ product.quantity }}</td></tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center text-muted">No low stock items</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">⭐ Top Selling Products</h5>
+                <table class="table table-sm">
+                    <thead><tr><th>Product</th><th>Orders</th></tr></thead>
+                    <tbody>
+                        {% for product in top_products %}
+                        <tr><td>{{ product.name }}</td><td>{{ product.order_count }}</td></tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center text-muted">No orders yet</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📋 Recent Orders</h5>
+                <table class="table">
+                    <thead><tr><th>Order #</th><th>User</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.user.username }}</td>
+                            <td>₹{{ order.total_amount }}</td>
+                            <td>{{ order.status }}</td>
+                            <td>{{ order.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-muted">No orders yet</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch("{% url 'chart_data' %}?type=orders_per_month")
+    .then(response => response.json())
+    .then(data => {
+        const ctx = document.getElementById('ordersChart').getContext('2d');
+        new Chart(ctx, { type: 'line', data: data, options: { responsive: true, maintainAspectRatio: false } });
+    });
+</script>
+{% endblock %}

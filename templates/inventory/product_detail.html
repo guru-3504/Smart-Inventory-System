@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} - Inventory System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title">{{ product.name }}</h1>
+    {% if user.profile.is_admin %}
+        <div>
+            <a href="{% url 'product_edit' product.pk %}" class="btn btn-warning">Edit</a>
+            <form method="POST" action="{% url 'product_delete' product.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this product?')">Delete</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Product Information</h5>
+                <dl class="row">
+                    <dt class="col-sm-4">SKU:</dt>
+                    <dd class="col-sm-8"><code>{{ product.sku }}</code></dd>
+
+                    <dt class="col-sm-4">Category:</dt>
+                    <dd class="col-sm-8">{{ product.category.name }}</dd>
+
+                    <dt class="col-sm-4">Supplier:</dt>
+                    <dd class="col-sm-8"><a href="{% url 'supplier_detail' product.supplier.pk %}">{{ product.supplier.name }}</a></dd>
+
+                    <dt class="col-sm-4">Price:</dt>
+                    <dd class="col-sm-8"><strong>₹{{ product.price }}</strong></dd>
+
+                    <dt class="col-sm-4">Current Stock:</dt>
+                    <dd class="col-sm-8">
+                        <strong>{{ product.quantity }}</strong>
+                        {% if product.quantity == 0 %}
+                            <span class="badge bg-danger">Out of Stock</span>
+                        {% elif product.is_low_stock %}
+                            <span class="badge bg-warning text-dark">Low Stock</span>
+                        {% else %}
+                            <span class="badge bg-success">In Stock</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-4">Threshold:</dt>
+                    <dd class="col-sm-8">{{ product.low_stock_threshold }} units</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p>{{ product.description|default:"No description provided" }}</p>
+
+                <h5 class="card-title mt-4">Timestamps</h5>
+                <dl class="row">
+                    <dt class="col-sm-4">Created:</dt>
+                    <dd class="col-sm-8">{{ product.created_at|date:"M d, Y H:i" }}</dd>
+
+                    <dt class="col-sm-4">Updated:</dt>
+                    <dd class="col-sm-8">{{ product.updated_at|date:"M d, Y H:i" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">← Back to Products</a>
+</div>
+{% endblock %}

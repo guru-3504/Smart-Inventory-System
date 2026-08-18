@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Create Order - Inventory System{% endblock %}
+{% block content %}
+<h1 class="page-title">➕ Create New Order</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" id="orderForm">
+                    {% csrf_token %}
+                    <h5 class="mb-4">Select Products</h5>
+                    <div id="products-container">
+                        <div class="product-row mb-3 p-3 border rounded">
+                            <div class="row g-3">
+                                <div class="col-md-7">
+                                    <label class="form-label">Product</label>
+                                    <select class="form-select product-select" name="product_id">
+                                        <option value="">-- Select Product --</option>
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}" data-price="{{ product.price }}">
+                                                {{ product.name }} (Stock: {{ product.quantity }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control quantity-input" name="quantity" min="1" value="1">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button type="button" class="btn btn-danger btn-sm w-100 remove-row" style="display:none;">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary mb-4" id="addMoreBtn">+ Add Another Product</button>
+                    <hr>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create Order</button>
+                        <a href="{% url 'order_list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('addMoreBtn').addEventListener('click', function() {
+    const container = document.getElementById('products-container');
+    const newRow = document.querySelector('.product-row').cloneNode(true);
+    newRow.querySelector('.product-select').value = '';
+    newRow.querySelector('.quantity-input').value = '1';
+    newRow.querySelector('.remove-row').style.display = 'block';
+    newRow.querySelector('.remove-row').addEventListener('click', function() {
+        newRow.remove();
+    });
+    container.appendChild(newRow);
+});
+</script>
+{% endblock %}
