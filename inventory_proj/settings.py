@@ -93,7 +93,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_PORT = 2525
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'a92fd1bceaec2a'
+EMAIL_HOST_USER = EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_HOST_PASSWORD = 'e70f006a0508c3'
 DEFAULT_FROM_EMAIL = 'noreply@inventory-system.com'
 
