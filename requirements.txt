@@ -4,6 +4,7 @@ Django==6.1
 django-cors-headers==4.9.0
 django-filter==25.1
 djangorestframework==3.17.2
+gunicorn==26.2.0
 pillow==12.3.0
 psycopg2-binary==2.9.12
 python-decouple==3.8
